@@ -1,25 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import { connect } from "react-redux";
+import "./App.css";
+import { getUserList } from "./redux/actions/getUserAction";
+import { getPosts } from "./redux/actions/getPostAction";
 
-function App() {
+function App(props) {
+  const { isLoading, getUserList, getPosts, userData, post } = props;
+  useEffect(() => {
+    getPosts();
+  }, [getPosts]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <button onClick={() => getUserList()}>Call API</button>
+      {isLoading && <h1>Loading...</h1>}
+      {!isLoading && <p>{JSON.stringify(userData)}</p>}
+
+      <h1>Post data fetch API on page Load</h1>
+
+      {!isLoading && <p>{JSON.stringify(post)}</p>}
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    userData: state.user.userData,
+    isLoading: state.user.isLoading,
+    post: state.post.post,
+  };
+};
+export default connect(mapStateToProps, { getUserList, getPosts })(App);
